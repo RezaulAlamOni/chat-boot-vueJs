@@ -1828,6 +1828,7 @@ __webpack_require__.r(__webpack_exports__);
       users: [],
       auth: [],
       chatUser: [],
+      selectedUser: 0,
       chatMessage: [],
       messageText: ''
     };
@@ -1845,9 +1846,20 @@ __webpack_require__.r(__webpack_exports__);
         path: '/'
       });
     });
+    setInterval(function () {
+      if (app.selectedUser > 0) {
+        app.GetAllChatHistory(app.selectedUser);
+      }
+    }, 2000);
   },
   methods: {
     chatWithUser: function chatWithUser(id) {
+      this.selectedUser = id;
+      $('#' + this.chatUser.id).removeClass('active');
+      $('#' + id).addClass('active');
+      this.GetAllChatHistory(id);
+    },
+    GetAllChatHistory: function GetAllChatHistory(id) {
       $('.messageSection').show();
       var app = this;
       axios.get('/users/' + id).then(function (resp) {
@@ -37244,6 +37256,7 @@ var render = function() {
                   return _c(
                     "li",
                     {
+                      attrs: { id: user.id },
                       on: {
                         click: function($event) {
                           return _vm.chatWithUser(user.id)
@@ -37412,6 +37425,23 @@ var render = function() {
                 attrs: { name: "", placeholder: "Type your message..." },
                 domProps: { value: _vm.messageText },
                 on: {
+                  keyup: function($event) {
+                    if (
+                      !$event.type.indexOf("key") &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    if (
+                      $event.ctrlKey ||
+                      $event.shiftKey ||
+                      $event.altKey ||
+                      $event.metaKey
+                    ) {
+                      return null
+                    }
+                    return _vm.sendMessage()
+                  },
                   input: function($event) {
                     if ($event.target.composing) {
                       return

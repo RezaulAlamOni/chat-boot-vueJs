@@ -24,7 +24,7 @@
                     </div>
                     <div class="card-body contacts_body">
                         <ui class="contacts">
-                            <li v-for="user in users" v-on:click="chatWithUser(user.id)">
+                            <li v-for="user in users" v-on:click="chatWithUser(user.id)" :id="user.id" >
                                 <div class="d-flex bd-highlight">
                                     <div class="img_cont">
                                         <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img">
@@ -103,7 +103,7 @@
                             <div class="input-group-append">
                                 <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
                             </div>
-                            <textarea name="" class="form-control type_msg" v-model="messageText" placeholder="Type your message..."></textarea>
+                            <textarea name="" class="form-control type_msg" v-model="messageText"  @keyup.enter.exact="sendMessage()" placeholder="Type your message..."></textarea>
                             <div class="input-group-append">
                                 <span class="input-group-text send_btn" v-on:click="sendMessage()"><i class="fas fa-location-arrow"></i></span>
                             </div>
@@ -131,6 +131,7 @@
                 auth :[],
                 chatUser : [
                 ],
+                selectedUser: 0,
                 chatMessage:[],
                 messageText : '',
             }
@@ -148,10 +149,21 @@
                     console.log(resp);
                     app.$router.push({path: '/'})
                 });
+            setInterval(function () {
+                if(app.selectedUser > 0){
+                    app.GetAllChatHistory(app.selectedUser);
+                }
+            },2000)
 
         },
         methods: {
             chatWithUser(id) {
+                this.selectedUser = id;
+                $('#'+this.chatUser.id).removeClass('active')
+                $('#'+id).addClass('active')
+                this.GetAllChatHistory(id);
+            },
+            GetAllChatHistory(id) {
                 $('.messageSection').show()
                 var app = this;
                 axios.get('/users/'+id)
