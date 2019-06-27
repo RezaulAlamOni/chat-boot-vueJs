@@ -18,6 +18,7 @@ Auth::routes();
 
 Route::get('/users','VueController@AllUsers');
 Route::get('/users/{id}','VueController@userChatData');
+Route::post('/users/message-send','VueController@messageSend');
 
 Route::get( '/{vue_route?}', 'VueController@index' )->where( 'vue_route', '(.*)' );
 

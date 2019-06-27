@@ -13,8 +13,9 @@ class AddOnlineStausToUsersTable extends Migration
      */
     public function up()
     {
+
         Schema::table('users', function (Blueprint $table) {
-            $table->tinyInteger('status')->after('email');
+            $table->tinyInteger('status')->after('email')->default(0);
         });
     }
 
