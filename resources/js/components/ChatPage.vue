@@ -6,7 +6,7 @@
                     <div class="d-flex bd-highlight pl-2 pt-2" >
                         <div class="img_cont">
                             <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img">
-                            <span class="online_icon offline"></span>
+                            <span class="online_icon online"></span>
                         </div>
                         <div class="user_info">
                             <span>{{auth.name}}</span>
@@ -28,7 +28,8 @@
                                 <div class="d-flex bd-highlight">
                                     <div class="img_cont">
                                         <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img">
-                                        <span class="online_icon offline"></span>
+                                        <span v-if="user.status == 0" class="online_icon offline"></span>
+                                        <span v-if="user.status == 1" class="online_icon online"></span>
                                     </div>
                                     <div class="user_info">
                                         <span>{{user.name}}</span>
@@ -43,14 +44,15 @@
             </div>
             <div class="col-md-8 col-xl-6 chat">
                 <div class="card">
-                    <div class="card-header msg_head">
+                    <div class="card-header msg_head messageSection">
                         <div class="d-flex bd-highlight">
                             <div class="img_cont">
                                 <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img">
-                                <span class="online_icon"></span>
+                                <span v-if="chatUser.status == 0" class="online_icon offline"></span>
+                                <span v-if="chatUser.status == 1" class="online_icon online"></span>
                             </div>
                             <div class="user_info">
-                                <span>Chat with Maryam Naz</span>
+                                <span>Chat with <b>{{chatUser.name}}</b></span>
                                 <p>1767 Messages</p>
                             </div>
                             <div class="video_cam">
@@ -68,7 +70,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="card-body msg_card_body">
+                    <div class="card-body msg_card_body messageSection">
                         <div class="d-flex justify-content-start mb-4">
                             <div class="img_cont_msg">
                                 <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img_msg">
@@ -139,7 +141,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer messageSection">
                         <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
@@ -164,10 +166,13 @@
                 search: '',
                 users: [],
                 auth :[],
+                chatUser : [
+                ],
+                chatMessage:[]
             }
         },
         mounted() {
-
+            $('.messageSection').hide()
             var app = this;
             axios.get('/users')
                 .then(function (resp) {
@@ -179,10 +184,22 @@
                     console.log(resp);
                     alert("Could not load users");
                 });
+
         },
         methods: {
             chatWithUser(id) {
-                alert(id);
+                $('.messageSection').show()
+                var app = this;
+                axios.get('/users/'+id)
+                    .then(function (resp) {
+                        console.log(resp.data)
+                        app.chatUser = resp.data.user;
+                        app.chatMessage = resp.data.message;
+                    })
+                    .catch(function (resp) {
+                        console.log(resp);
+                        alert("Failed");
+                    });
             }
         }
     }

@@ -1856,15 +1856,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       search: '',
       users: [],
-      auth: []
+      auth: [],
+      chatUser: [],
+      chatMessage: []
     };
   },
   mounted: function mounted() {
+    $('.messageSection').hide();
     var app = this;
     axios.get('/users').then(function (resp) {
       console.log(resp.data);
@@ -1877,7 +1882,16 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     chatWithUser: function chatWithUser(id) {
-      alert(id);
+      $('.messageSection').show();
+      var app = this;
+      axios.get('/users/' + id).then(function (resp) {
+        console.log(resp.data);
+        app.chatUser = resp.data.user;
+        app.chatMessage = resp.data.message;
+      })["catch"](function (resp) {
+        console.log(resp);
+        alert("Failed");
+      });
     }
   }
 });
@@ -37218,7 +37232,7 @@ var render = function() {
                 attrs: { src: "/image/p1.png" }
               }),
               _vm._v(" "),
-              _c("span", { staticClass: "online_icon offline" })
+              _c("span", { staticClass: "online_icon online" })
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "user_info" }, [
@@ -37255,7 +37269,13 @@ var render = function() {
                             attrs: { src: "/image/p1.png" }
                           }),
                           _vm._v(" "),
-                          _c("span", { staticClass: "online_icon offline" })
+                          user.status == 0
+                            ? _c("span", { staticClass: "online_icon offline" })
+                            : _vm._e(),
+                          _vm._v(" "),
+                          user.status == 1
+                            ? _c("span", { staticClass: "online_icon online" })
+                            : _vm._e()
                         ]),
                         _vm._v(" "),
                         _c("div", { staticClass: "user_info" }, [
@@ -37279,7 +37299,7 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "col-md-8 col-xl-6 chat" }, [
         _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-header msg_head" }, [
+          _c("div", { staticClass: "card-header msg_head messageSection" }, [
             _c("div", { staticClass: "d-flex bd-highlight" }, [
               _c("div", { staticClass: "img_cont" }, [
                 _c("img", {
@@ -37287,20 +37307,33 @@ var render = function() {
                   attrs: { src: "/image/p1.png" }
                 }),
                 _vm._v(" "),
-                _c("span", { staticClass: "online_icon" })
+                _vm.chatUser.status == 0
+                  ? _c("span", { staticClass: "online_icon offline" })
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.chatUser.status == 1
+                  ? _c("span", { staticClass: "online_icon online" })
+                  : _vm._e()
               ]),
               _vm._v(" "),
-              _vm._m(1),
+              _c("div", { staticClass: "user_info" }, [
+                _c("span", [
+                  _vm._v("Chat with "),
+                  _c("b", [_vm._v(_vm._s(_vm.chatUser.name))])
+                ]),
+                _vm._v(" "),
+                _c("p", [_vm._v("1767 Messages")])
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "video_cam" })
             ]),
             _vm._v(" "),
-            _vm._m(2),
+            _vm._m(1),
             _vm._v(" "),
-            _vm._m(3)
+            _vm._m(2)
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "card-body msg_card_body" }, [
+          _c("div", { staticClass: "card-body msg_card_body messageSection" }, [
             _c("div", { staticClass: "d-flex justify-content-start mb-4" }, [
               _c("div", { staticClass: "img_cont_msg" }, [
                 _c("img", {
@@ -37309,10 +37342,10 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
-              _vm._m(4)
+              _vm._m(3)
             ]),
             _vm._v(" "),
-            _vm._m(5),
+            _vm._m(4),
             _vm._v(" "),
             _c("div", { staticClass: "d-flex justify-content-start mb-4" }, [
               _c("div", { staticClass: "img_cont_msg" }, [
@@ -37322,10 +37355,10 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
-              _vm._m(6)
+              _vm._m(5)
             ]),
             _vm._v(" "),
-            _vm._m(7),
+            _vm._m(6),
             _vm._v(" "),
             _c("div", { staticClass: "d-flex justify-content-start mb-4" }, [
               _c("div", { staticClass: "img_cont_msg" }, [
@@ -37335,10 +37368,10 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
-              _vm._m(8)
+              _vm._m(7)
             ]),
             _vm._v(" "),
-            _vm._m(9),
+            _vm._m(8),
             _vm._v(" "),
             _c("div", { staticClass: "d-flex justify-content-start mb-4" }, [
               _c("div", { staticClass: "img_cont_msg" }, [
@@ -37348,11 +37381,11 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
-              _vm._m(10)
+              _vm._m(9)
             ])
           ]),
           _vm._v(" "),
-          _vm._m(11)
+          _vm._m(10)
         ])
       ])
     ])
@@ -37376,16 +37409,6 @@ var staticRenderFns = [
           ])
         ])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "user_info" }, [
-      _c("span", [_vm._v("Chat with Maryam Naz")]),
-      _vm._v(" "),
-      _c("p", [_vm._v("1767 Messages")])
     ])
   },
   function() {
@@ -37538,7 +37561,7 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-footer" }, [
+    return _c("div", { staticClass: "card-footer messageSection" }, [
       _c("div", { staticClass: "input-group" }, [
         _c("div", { staticClass: "input-group-append" }, [
           _c("span", { staticClass: "input-group-text attach_btn" }, [

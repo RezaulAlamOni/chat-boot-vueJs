@@ -109,6 +109,11 @@
             width: 100% !important;
             padding: 5px 10px;
             margin-bottom: 15px !important;
+            cursor: pointer;
+        }
+        .contacts li:hover{
+            background-color: #38505D;
+            color: red;
         }
         .active{
             background-color: rgba(0,0,0,0.3);
