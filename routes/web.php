@@ -15,6 +15,9 @@
 //     return view('vue');
 // });
 Auth::routes();
+
+Route::get('/users','VueController@AllUsers');
+
 Route::get( '/{vue_route?}', 'VueController@index' )->where( 'vue_route', '(.*)' );
 
 
