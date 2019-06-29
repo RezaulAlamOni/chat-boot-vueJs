@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="card-body contacts_body">
-                        <ui class="contacts">
+                        <ul class="contacts">
                             <li v-for="user in users" v-on:click="chatWithUser(user.id)" :id="user.id" >
                                 <div class="d-flex bd-highlight">
                                     <div class="img_cont">
@@ -37,7 +37,7 @@
                                     </div>
                                 </div>
                             </li>
-                        </ui>
+                        </ul>
                     </div>
                     <div class="card-footer"></div>
                 </div>
@@ -116,24 +116,18 @@
 </template>
 
 <script>
-    // module.exports = function(Vue) {
-    //     Vue.directive('auto-bottom', {
-    //         update: function() {
-    //             this.el.scrollTop = this.el.scrollHeight;
-    //         }
-    //     })
-    // };
     export default {
         data() {
             return {
                 search: '',
                 users: [],
                 auth :[],
-                chatUser : [
-                ],
+                chatUser : [],
                 selectedUser: 0,
                 chatMessage:[],
                 messageText : '',
+                Socket : null,
+
             }
         },
         mounted() {
@@ -144,19 +138,26 @@
                     console.log(resp.data)
                     app.users = resp.data.users;
                     app.auth = resp.data.auth;
+                    app.connectSocket();
                 })
                 .catch(function (resp) {
                     console.log(resp);
                     app.$router.push({path: '/'})
                 });
-            setInterval(function () {
-                if(app.selectedUser > 0){
-                    app.GetAllChatHistory(app.selectedUser);
-                }
-            },2000)
-
         },
         methods: {
+            connectSocket: function(){
+                let app = this;
+                if(app.Socket == null){
+                    app.Socket = io.connect('http://localhost:3000/');
+                    console.log(app.auth.id);
+                    app.Socket.on('newMessage'+app.auth.id, function (res) {
+                        console.log(res);
+                        app.chatMessage.push(res)
+                        setTimeout(function(){ $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight; }, 5);
+                    });
+                }
+            },
             chatWithUser(id) {
                 this.selectedUser = id;
                 $('#'+this.chatUser.id).removeClass('active')
@@ -187,14 +188,13 @@
                     sendFrom : sendFrom,
                     text : messageText,
                 }
-
                 axios.post('/users/message-send',data)
                     .then(function (resp) {
+                        _this.chatMessage.push({sender:sendFrom,receiver:_this.chatUser.id,message: _this.messageText})
+                        _this.Socket.emit('message',{sender:sendFrom,receiver:_this.chatUser.id,message: _this.messageText})
+                        setTimeout(function(){ $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight; }, 5);
                         _this.messageText = '';
-                        setInterval(function () {
 
-                        })
-                        _this.chatWithUser(sendTo)
                     })
                     .catch(function (resp) {
                         // console.log(resp);

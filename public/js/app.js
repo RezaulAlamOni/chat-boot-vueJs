@@ -1814,13 +1814,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-// module.exports = function(Vue) {
-//     Vue.directive('auto-bottom', {
-//         update: function() {
-//             this.el.scrollTop = this.el.scrollHeight;
-//         }
-//     })
-// };
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1830,7 +1823,8 @@ __webpack_require__.r(__webpack_exports__);
       chatUser: [],
       selectedUser: 0,
       chatMessage: [],
-      messageText: ''
+      messageText: '',
+      Socket: null
     };
   },
   mounted: function mounted() {
@@ -1840,19 +1834,30 @@ __webpack_require__.r(__webpack_exports__);
       console.log(resp.data);
       app.users = resp.data.users;
       app.auth = resp.data.auth;
+      app.connectSocket();
     })["catch"](function (resp) {
       console.log(resp);
       app.$router.push({
         path: '/'
       });
     });
-    setInterval(function () {
-      if (app.selectedUser > 0) {
-        app.GetAllChatHistory(app.selectedUser);
-      }
-    }, 2000);
   },
   methods: {
+    connectSocket: function connectSocket() {
+      var app = this;
+
+      if (app.Socket == null) {
+        app.Socket = io.connect('http://localhost:3000/');
+        console.log(app.auth.id);
+        app.Socket.on('newMessage' + app.auth.id, function (res) {
+          console.log(res);
+          app.chatMessage.push(res);
+          setTimeout(function () {
+            $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
+          }, 5);
+        });
+      }
+    },
     chatWithUser: function chatWithUser(id) {
       this.selectedUser = id;
       $('#' + this.chatUser.id).removeClass('active');
@@ -1885,10 +1890,22 @@ __webpack_require__.r(__webpack_exports__);
         text: messageText
       };
       axios.post('/users/message-send', data).then(function (resp) {
-        _this.messageText = '';
-        setInterval(function () {});
+        _this.chatMessage.push({
+          sender: sendFrom,
+          receiver: _this.chatUser.id,
+          message: _this.messageText
+        });
 
-        _this.chatWithUser(sendTo);
+        _this.Socket.emit('message', {
+          sender: sendFrom,
+          receiver: _this.chatUser.id,
+          message: _this.messageText
+        });
+
+        setTimeout(function () {
+          $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
+        }, 5);
+        _this.messageText = '';
       })["catch"](function (resp) {
         // console.log(resp);
         alert("Failed to send Message");
@@ -37245,55 +37262,50 @@ var render = function() {
           _vm._v(" "),
           _vm._m(0),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "card-body contacts_body" },
-            [
-              _c(
-                "ui",
-                { staticClass: "contacts" },
-                _vm._l(_vm.users, function(user) {
-                  return _c(
-                    "li",
-                    {
-                      attrs: { id: user.id },
-                      on: {
-                        click: function($event) {
-                          return _vm.chatWithUser(user.id)
-                        }
+          _c("div", { staticClass: "card-body contacts_body" }, [
+            _c(
+              "ul",
+              { staticClass: "contacts" },
+              _vm._l(_vm.users, function(user) {
+                return _c(
+                  "li",
+                  {
+                    attrs: { id: user.id },
+                    on: {
+                      click: function($event) {
+                        return _vm.chatWithUser(user.id)
                       }
-                    },
-                    [
-                      _c("div", { staticClass: "d-flex bd-highlight" }, [
-                        _c("div", { staticClass: "img_cont" }, [
-                          _c("img", {
-                            staticClass: "rounded-circle user_img",
-                            attrs: { src: "/image/p1.png" }
-                          }),
-                          _vm._v(" "),
-                          user.status == 0
-                            ? _c("span", { staticClass: "online_icon offline" })
-                            : _vm._e(),
-                          _vm._v(" "),
-                          user.status == 1
-                            ? _c("span", { staticClass: "online_icon online" })
-                            : _vm._e()
-                        ]),
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "d-flex bd-highlight" }, [
+                      _c("div", { staticClass: "img_cont" }, [
+                        _c("img", {
+                          staticClass: "rounded-circle user_img",
+                          attrs: { src: "/image/p1.png" }
+                        }),
                         _vm._v(" "),
-                        _c("div", { staticClass: "user_info" }, [
-                          _c("span", [_vm._v(_vm._s(user.name))]),
-                          _vm._v(" "),
-                          _c("p", [_vm._v("Sahar left 7 mins ago")])
-                        ])
+                        user.status == 0
+                          ? _c("span", { staticClass: "online_icon offline" })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        user.status == 1
+                          ? _c("span", { staticClass: "online_icon online" })
+                          : _vm._e()
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "user_info" }, [
+                        _c("span", [_vm._v(_vm._s(user.name))]),
+                        _vm._v(" "),
+                        _c("p", [_vm._v("Sahar left 7 mins ago")])
                       ])
-                    ]
-                  )
-                }),
-                0
-              )
-            ],
-            1
-          ),
+                    ])
+                  ]
+                )
+              }),
+              0
+            )
+          ]),
           _vm._v(" "),
           _c("div", { staticClass: "card-footer" })
         ])
