@@ -28,8 +28,8 @@
                                 <div class="d-flex bd-highlight">
                                     <div class="img_cont">
                                         <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img">
-                                        <span v-if="user.status == 0" class="online_icon offline"></span>
-                                        <span v-if="user.status == 1" class="online_icon online"></span>
+                                        <span v-if="user.status === 0" class="online_icon offline"></span>
+                                        <span v-if="user.status === 1" class="online_icon online"></span>
                                     </div>
                                     <div class="user_info">
                                         <span>{{user.name}}</span>
@@ -129,6 +129,8 @@
                 chatMessage: [],
                 messageText: '',
                 Socket: null,
+                logoutId: 0,
+                loginId: 0
             }
         },
         mounted() {
@@ -137,24 +139,22 @@
             var app = this;
             axios.get('/users')
                 .then(function (resp) {
-                    console.log(resp.data)
+                    // console.log(resp.data.users)
                     app.users = resp.data.users;
                     app.auth = resp.data.auth;
                     app.connectSocket();
-
-
                 })
                 .catch(function (resp) {
                     console.log(resp);
                     app.$router.push({path: '/'})
                 });
-
         },
         methods: {
             connectSocket: function () {
                 let app = this;
                 if (app.Socket == null) {
                     app.Socket = io.connect('http://localhost:3000/');
+                    app.Socket.emit('loginId',app.auth.id)
                     app.Socket.on('newMessage' + app.auth.id, function (res) {
                         console.log(res);
                         app.chatMessage.push(res)
@@ -168,6 +168,27 @@
                             $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
                         }, 1);
                     });
+                    app.Socket.on('logoutId', function (logoutId) {
+                        app.logoutId = logoutId;
+                        var userLenth =  app.users.length
+                        var i;
+                        for (i = 0;i < userLenth;i++) {
+                            if (app.users[i].id===logoutId) {
+                                app.users[i].status = 0;
+                            }
+                        }
+
+                    })
+                    app.Socket.on('loginId', function (loginId) {
+                        app.loginId = loginId;
+                        var userLenth =  app.users.length
+                        var i;
+                        for (i = 0;i < userLenth;i++) {
+                            if (app.users[i].id===loginId) {
+                                app.users[i].status = 1;
+                            }
+                        }
+                    })
                 }
             },
             chatWithUser(id) {

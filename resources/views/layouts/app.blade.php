@@ -295,8 +295,7 @@
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                       onclick="event.preventDefault();logoutAndUpdate({{auth()->id()}})">
                                         {{ __('Logout') }}
                                     </a>
 
@@ -316,11 +315,29 @@
         </main>
     </div>
     <script>
+
+
+
         $(document).ready(function(){
             $('#action_menu_btn').click(function(){
                 $('.action_menu').toggle();
             });
         });
+        function logoutAndUpdate(id) {
+            var Socket = io.connect('http://localhost:3000/');
+            document.getElementById('logout-form').submit();
+            $.ajax({
+                type: "POST",
+                url: '/user-status/update/'+id,
+                success: function success(msg) {
+                    document.getElementById('logout-form').submit();
+
+                    Socket.emit('logoutId', id)
+
+                },
+            });
+
+        }
     </script>
 </body>
 </html>

@@ -31,6 +31,14 @@ class VueController extends Controller
         return response()->json(['user'=>$users,'msg'=>$message],200);
 
     }
+    public function UpdateStatus(Request $request){
+        $id = $request->id;
+        $user = User::where('id',$id)->first();
+        $user->status = 0;
+        $user->save();
+        return response()->json(['status'=>'success'],200);
+
+    }
     public function messageSend(Request $request){
         $receiver = $request->sendTo;
         $sender = $request->sendFrom;

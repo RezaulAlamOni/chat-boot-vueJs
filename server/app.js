@@ -22,4 +22,12 @@ io.on('connection', function(socket) {
         console.log('newMessage'+data.receiver)
         io.emit('newMessage'+data.receiver, data);
     });
+    socket.on('logoutId', function(data) {
+        console.log(data)
+        io.emit('logoutId',data);
+    });
+    socket.on('loginId', function(data) {
+        console.log(data)
+        io.emit('loginId',data);
+    });
 });
