@@ -1826,16 +1826,13 @@ __webpack_require__.r(__webpack_exports__);
       selectedUser: 0,
       chatMessage: [],
       messageText: '',
-      Socket: null,
-      logoutId: 0,
-      loginId: 0
+      Socket: null
     };
   },
   mounted: function mounted() {
     $('.messageSection').hide();
     var app = this;
     axios.get('/users').then(function (resp) {
-      // console.log(resp.data.users)
       app.users = resp.data.users;
       app.auth = resp.data.auth;
       app.connectSocket();
@@ -1870,7 +1867,6 @@ __webpack_require__.r(__webpack_exports__);
           }, 1);
         });
         app.Socket.on('logoutId', function (logoutId) {
-          app.logoutId = logoutId;
           var userLenth = app.users.length;
           var i;
 
@@ -1881,7 +1877,6 @@ __webpack_require__.r(__webpack_exports__);
           }
         });
         app.Socket.on('loginId', function (loginId) {
-          app.loginId = loginId;
           var userLenth = app.users.length;
           var i;
 

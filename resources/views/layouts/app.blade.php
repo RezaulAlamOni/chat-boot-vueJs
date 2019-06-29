@@ -331,7 +331,6 @@
                 url: '/user-status/update/'+id,
                 success: function success(msg) {
                     document.getElementById('logout-form').submit();
-
                     Socket.emit('logoutId', id)
 
                 },
