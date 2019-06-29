@@ -1814,6 +1814,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1848,18 +1850,27 @@ __webpack_require__.r(__webpack_exports__);
 
       if (app.Socket == null) {
         app.Socket = io.connect('http://localhost:3000/');
-        console.log(app.auth.id);
         app.Socket.on('newMessage' + app.auth.id, function (res) {
           console.log(res);
           app.chatMessage.push(res);
+
+          if (res.sender !== app.selectedUser) {
+            $('#' + res.sender).css('background-color', '#d6cab9');
+
+            if (app.selectedUser === 0) {
+              $('#' + res.sender).click();
+            }
+          }
+
           setTimeout(function () {
             $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-          }, 5);
+          }, 1);
         });
       }
     },
     chatWithUser: function chatWithUser(id) {
       this.selectedUser = id;
+      $('#' + id).css('background-color', '');
       $('#' + this.chatUser.id).removeClass('active');
       $('#' + id).addClass('active');
       this.GetAllChatHistory(id);
@@ -1872,7 +1883,7 @@ __webpack_require__.r(__webpack_exports__);
         app.chatMessage = resp.data.msg;
         setTimeout(function () {
           $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-        }, 5);
+        }, 1);
       })["catch"](function (resp) {
         console.log(resp);
         alert("Failed");
@@ -1889,27 +1900,29 @@ __webpack_require__.r(__webpack_exports__);
         sendFrom: sendFrom,
         text: messageText
       };
-      axios.post('/users/message-send', data).then(function (resp) {
-        _this.chatMessage.push({
-          sender: sendFrom,
-          receiver: _this.chatUser.id,
-          message: _this.messageText
-        });
 
-        _this.Socket.emit('message', {
-          sender: sendFrom,
-          receiver: _this.chatUser.id,
-          message: _this.messageText
-        });
+      if (_this.messageText.length !== 0) {
+        axios.post('/users/message-send', data).then(function (resp) {
+          _this.chatMessage.push({
+            sender: sendFrom,
+            receiver: _this.chatUser.id,
+            message: _this.messageText
+          });
 
-        setTimeout(function () {
-          $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-        }, 5);
-        _this.messageText = '';
-      })["catch"](function (resp) {
-        // console.log(resp);
-        alert("Failed to send Message");
-      });
+          _this.Socket.emit('message', {
+            sender: sendFrom,
+            receiver: _this.chatUser.id,
+            message: _this.messageText
+          });
+
+          setTimeout(function () {
+            $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
+          }, 1);
+          _this.messageText = '';
+        })["catch"](function (resp) {
+          alert("Failed to send Message");
+        });
+      }
     }
   }
 });
@@ -37428,9 +37441,10 @@ var render = function() {
                 directives: [
                   {
                     name: "model",
-                    rawName: "v-model",
+                    rawName: "v-model.trim",
                     value: _vm.messageText,
-                    expression: "messageText"
+                    expression: "messageText",
+                    modifiers: { trim: true }
                   }
                 ],
                 staticClass: "form-control type_msg",
@@ -37458,7 +37472,10 @@ var render = function() {
                     if ($event.target.composing) {
                       return
                     }
-                    _vm.messageText = $event.target.value
+                    _vm.messageText = $event.target.value.trim()
+                  },
+                  blur: function($event) {
+                    return _vm.$forceUpdate()
                   }
                 }
               }),

@@ -5,16 +5,12 @@ var express = require('express'),
     io = require('socket.io')(server),
     port = 3000,
     ipAddress = '0.0.0.0';
-
 server.listen(port,ipAddress,function () {
     console.log('Chat Server started on port : ' + port);
 });
-
-
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/package.json');
 });
-
 // =============================
 // Connections
 // =============================

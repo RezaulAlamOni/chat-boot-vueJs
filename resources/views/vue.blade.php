@@ -238,6 +238,13 @@
                 margin-bottom: 15px !important;
             }
         }
+        .activeForNewmessage{
+            background-color: rgba(221, 137, 148, 0.58) !important;
+        }
+        .pingPong{
+            color: #ffc5d8;
+            background-color: #1e1aff !important;
+        }
     </style>
 </head>
 <!--Coded With Love By Mutiullah Samim-->
