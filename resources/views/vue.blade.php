@@ -433,5 +433,11 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        $('.file-upload').file_upload();
+    })
+
+</script>
 </body>
 </html>

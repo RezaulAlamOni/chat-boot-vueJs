@@ -1816,6 +1816,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1826,7 +1841,8 @@ __webpack_require__.r(__webpack_exports__);
       selectedUser: 0,
       chatMessage: [],
       messageText: '',
-      Socket: null
+      Socket: null,
+      photo: ''
     };
   },
   mounted: function mounted() {
@@ -1943,6 +1959,23 @@ __webpack_require__.r(__webpack_exports__);
           alert("Failed to send Message");
         });
       }
+    },
+    fileSend: function fileSend(e) {
+      this.photo = this.$refs.file.files[0];
+      var formData = new FormData();
+      formData.append('file', this.photo);
+      axios.post('/photo-upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(function (res) {
+        console.log(res);
+      })["catch"](function (res) {
+        console.log(res);
+      });
+    },
+    removeFile: function removeFile() {
+      this.photo = '';
     }
   }
 });
@@ -37403,9 +37436,9 @@ var render = function() {
                           _vm._v(" "),
                           _c("div", { staticClass: "msg_cotainer" }, [
                             _vm._v(
-                              "\n                                    " +
+                              "\n                                        " +
                                 _vm._s(message.message) +
-                                "\n                                    "
+                                "\n                                        "
                             ),
                             _c(
                               "span",
@@ -37429,9 +37462,9 @@ var render = function() {
                         [
                           _c("div", { staticClass: "msg_cotainer_send" }, [
                             _vm._v(
-                              "\n                                    " +
+                              "\n                                        " +
                                 _vm._s(message.message) +
-                                "\n                                    "
+                                "\n                                        "
                             ),
                             _c(
                               "span",
@@ -37454,8 +37487,33 @@ var render = function() {
           ),
           _vm._v(" "),
           _c("div", { staticClass: "card-footer messageSection" }, [
+            _c("br"),
+            _vm._v(" "),
             _c("div", { staticClass: "input-group" }, [
-              _vm._m(4),
+              _c("div", { staticClass: "input-group-append" }, [
+                _vm._m(4),
+                _vm._v(" "),
+                _c("input", {
+                  ref: "file",
+                  staticStyle: {
+                    position: "absolute",
+                    "font-size": "50px",
+                    opacity: "0",
+                    right: "0",
+                    top: "0"
+                  },
+                  attrs: {
+                    type: "file",
+                    id: "file",
+                    accept: "image/png, image/jpeg, image/gif"
+                  },
+                  on: {
+                    change: function($event) {
+                      return _vm.fileSend()
+                    }
+                  }
+                })
+              ]),
               _vm._v(" "),
               _c("textarea", {
                 directives: [
@@ -37468,6 +37526,7 @@ var render = function() {
                   }
                 ],
                 staticClass: "form-control type_msg",
+                staticStyle: { "padding-top": "18px" },
                 attrs: { name: "", placeholder: "Type your message..." },
                 domProps: { value: _vm.messageText },
                 on: {
@@ -37592,10 +37651,8 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "input-group-append" }, [
-      _c("span", { staticClass: "input-group-text attach_btn" }, [
-        _c("i", { staticClass: "fas fa-paperclip" })
-      ])
+    return _c("span", { staticClass: "input-group-text attach_btn" }, [
+      _c("i", { staticClass: "fas fa-paperclip" })
     ])
   }
 ]

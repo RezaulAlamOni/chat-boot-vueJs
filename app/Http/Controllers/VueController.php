@@ -52,4 +52,12 @@ class VueController extends Controller
         return response()->json(['status'=>'success'],200);
 
     }
+    public function UploadPhoto(){
+        if (move_uploaded_file($_FILES["file"]["tmp_name"], "image/".$_FILES['file']['name'])) {
+
+            return response()->json('success',200);
+        }else{
+            return response()->json('failed',500);
+        }
+    }
 }

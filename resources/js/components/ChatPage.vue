@@ -99,11 +99,26 @@
                         </div>
                     </div>
                     <div class="card-footer messageSection">
+<!--                        <div class="large-12 medium-12 small-12 cell">-->
+<!--                            <div class="file-listing">{{ photo.name }} <span class="remove-file" v-on:click="removeFile()">Remove</span></div>-->
+<!--                        </div>-->
+                        <br>
                         <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+                                <input
+                                    style="position: absolute;
+                                          font-size: 50px;
+                                          opacity: 0;
+                                          right: 0;
+                                          top: 0;"
+                                    type="file" id="file" ref="file"
+                                    accept="image/png, image/jpeg, image/gif"
+                                    @change="fileSend()"
+                                />
                             </div>
-                            <textarea name="" class="form-control type_msg" v-model.trim="messageText"
+
+                            <textarea name="" class="form-control type_msg" v-model.trim="messageText" style="padding-top: 18px"
                                       @keyup.enter.exact="sendMessage()" placeholder="Type your message..."></textarea>
                             <div class="input-group-append">
                                 <span class="input-group-text send_btn" v-on:click="sendMessage()"><i
@@ -129,6 +144,7 @@
                 chatMessage: [],
                 messageText: '',
                 Socket: null,
+                photo:''
             }
         },
         mounted() {
@@ -237,6 +253,22 @@
                         });
                 }
 
+            },
+            fileSend(e){
+                this.photo = this.$refs.file.files[0];
+                let formData = new FormData();
+                formData.append('file', this.photo);
+
+                axios.post( '/photo-upload', formData, {headers: {'Content-Type': 'multipart/form-data'}}).
+                    then(function(res){
+                        console.log(res);
+                    })
+                    .catch(function(res){
+                        console.log(res);
+                    });
+            },
+            removeFile(){
+                this.photo = '';
             }
 
         }
