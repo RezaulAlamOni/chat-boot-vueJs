@@ -52,9 +52,17 @@ class VueController extends Controller
         return response()->json(['status'=>'success'],200);
 
     }
-    public function UploadPhoto(){
+    public function UploadPhoto(Request $request){
+        $sender = $request->sender;
+        $receiver = $request->receiver;
+        $photo = $_FILES['file']['name'];
         if (move_uploaded_file($_FILES["file"]["tmp_name"], "image/".$_FILES['file']['name'])) {
-
+            $message = New Message();
+            $message->sender = $sender;
+            $message->receiver = $receiver;
+            $message->message = $photo;
+            $message->type = 1;
+            $message->save();
             return response()->json('success',200);
         }else{
             return response()->json('failed',500);

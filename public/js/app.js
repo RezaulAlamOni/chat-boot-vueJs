@@ -1831,6 +1831,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1942,13 +1944,15 @@ __webpack_require__.r(__webpack_exports__);
           _this.chatMessage.push({
             sender: sendFrom,
             receiver: _this.chatUser.id,
-            message: _this.messageText
+            message: _this.messageText,
+            type: 1
           });
 
           _this.Socket.emit('message', {
             sender: sendFrom,
             receiver: _this.chatUser.id,
-            message: _this.messageText
+            message: _this.messageText,
+            type: 1
           });
 
           setTimeout(function () {
@@ -1961,15 +1965,37 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     fileSend: function fileSend(e) {
+      var _this = this;
+
       this.photo = this.$refs.file.files[0];
       var formData = new FormData();
       formData.append('file', this.photo);
+      formData.append('sender', this.auth.id);
+      formData.append('receiver', this.chatUser.id);
       axios.post('/photo-upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       }).then(function (res) {
         console.log(res);
+
+        _this.chatMessage.push({
+          sender: _this.auth.id,
+          receiver: _this.chatUser.id,
+          message: _this.photo.name,
+          type: 1
+        });
+
+        setTimeout(function () {
+          $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
+        }, 1);
+
+        _this.Socket.emit('message', {
+          sender: _this.auth.id,
+          receiver: _this.chatUser.id,
+          message: _this.photo.name,
+          type: 1
+        });
       })["catch"](function (res) {
         console.log(res);
       });
@@ -37435,11 +37461,16 @@ var render = function() {
                           ]),
                           _vm._v(" "),
                           _c("div", { staticClass: "msg_cotainer" }, [
-                            _vm._v(
-                              "\n                                        " +
-                                _vm._s(message.message) +
-                                "\n                                        "
-                            ),
+                            message.type === 1
+                              ? _c("img", {
+                                  staticStyle: { "max-width": "100%" },
+                                  attrs: {
+                                    src: "/image/" + message.message,
+                                    alt: "image"
+                                  }
+                                })
+                              : _c("div", [_vm._v(_vm._s(message.message))]),
+                            _vm._v(" "),
                             _c(
                               "span",
                               {
@@ -37461,11 +37492,16 @@ var render = function() {
                         { staticClass: "d-flex justify-content-end mb-4" },
                         [
                           _c("div", { staticClass: "msg_cotainer_send" }, [
-                            _vm._v(
-                              "\n                                        " +
-                                _vm._s(message.message) +
-                                "\n                                        "
-                            ),
+                            message.type === 1
+                              ? _c("img", {
+                                  staticStyle: { "max-width": "100%" },
+                                  attrs: {
+                                    src: "/image/" + message.message,
+                                    alt: "image"
+                                  }
+                                })
+                              : _c("div", [_vm._v(_vm._s(message.message))]),
+                            _vm._v(" "),
                             _c(
                               "span",
                               {

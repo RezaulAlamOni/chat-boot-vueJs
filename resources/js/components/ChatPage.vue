@@ -78,7 +78,8 @@
                                         <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img_msg">
                                     </div>
                                     <div class="msg_cotainer">
-                                        {{message.message}}
+                                        <img v-if="message.type === 1" v-bind:src="'/image/'+message.message" alt="image"  style="max-width: 100%">
+                                            <div v-else="">{{message.message}}</div>
                                         <span class="msg_time" style="min-width: 200px">8:40 AM, Today</span>
                                     </div>
                                 </div>
@@ -86,7 +87,8 @@
                             <div v-if="message.sender === auth.id">
                                 <div class="d-flex justify-content-end mb-4">
                                     <div class="msg_cotainer_send">
-                                        {{message.message}}
+                                        <img v-if="message.type === 1" v-bind:src="'/image/'+message.message" alt="image" style="max-width: 100%">
+                                        <div v-else="">{{message.message}}</div>
                                         <span class="msg_time_send" style="min-width: 80px">8:55 AM, Today</span>
                                     </div>
                                     <div class="img_cont_msg">
@@ -236,12 +238,14 @@
                             _this.chatMessage.push({
                                 sender: sendFrom,
                                 receiver: _this.chatUser.id,
-                                message: _this.messageText
+                                message: _this.messageText,
+                                type : 1
                             })
                             _this.Socket.emit('message', {
                                 sender: sendFrom,
                                 receiver: _this.chatUser.id,
-                                message: _this.messageText
+                                message: _this.messageText,
+                                type : 1
                             })
                             setTimeout(function () {
                                 $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
@@ -255,13 +259,31 @@
 
             },
             fileSend(e){
+                var _this = this;
                 this.photo = this.$refs.file.files[0];
                 let formData = new FormData();
                 formData.append('file', this.photo);
+                formData.append('sender', this.auth.id);
+                formData.append('receiver', this.chatUser.id);
 
                 axios.post( '/photo-upload', formData, {headers: {'Content-Type': 'multipart/form-data'}}).
                     then(function(res){
                         console.log(res);
+                        _this.chatMessage.push({
+                            sender: _this.auth.id,
+                            receiver: _this.chatUser.id,
+                            message: _this.photo.name,
+                            type : 1
+                        })
+                    setTimeout(function () {
+                        $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
+                    }, 1);
+                        _this.Socket.emit('message', {
+                            sender: _this.auth.id,
+                            receiver: _this.chatUser.id,
+                            message: _this.photo.name,
+                            type : 1
+                        })
                     })
                     .catch(function(res){
                         console.log(res);
