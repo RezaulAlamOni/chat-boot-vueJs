@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="700e5a8a-0bba-4a21-930d-245f0b4020e5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/VueController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/VueController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/ChatPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/ChatPage.vue" afterDir="false" />
-    </list>
+    <list default="true" id="700e5a8a-0bba-4a21-930d-245f0b4020e5" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +16,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/resources/js/components/ChatPage.vue">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="289">
@@ -36,6 +32,15 @@
                 <element signature="e#19862#20167#0" />
                 <element signature="e#19772#20349#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/database/migrations/2019_06_29_113345_add_profile_photo_to_users_table.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="476">
+              <caret line="28" column="54" selection-start-line="28" selection-start-column="54" selection-end-line="28" selection-end-column="54" />
             </state>
           </provider>
         </entry>
@@ -142,6 +147,7 @@
         <option value="$PROJECT_DIR$/database/migrations/2019_06_29_104255_add_message_type_to_messages_table.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/VueController.php" />
         <option value="$PROJECT_DIR$/resources/js/components/ChatPage.vue" />
+        <option value="$PROJECT_DIR$/database/migrations/2019_06_29_113345_add_profile_photo_to_users_table.php" />
       </list>
     </option>
   </component>
@@ -244,7 +250,7 @@
       <path value="$PROJECT_DIR$/vendor/lcobucci/jwt" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="287" />
     <option name="y" value="527" />
     <option name="width" value="1400" />
@@ -337,15 +343,16 @@
       <workItem from="1560749024822" duration="48000" />
       <workItem from="1561608608390" duration="2177000" />
       <workItem from="1561610920702" duration="25654000" />
-      <workItem from="1561779145150" duration="22584000" />
+      <workItem from="1561779145150" duration="22800000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="65136000" />
+    <option name="totallyTimeSpent" value="65352000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1652452" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -362,7 +369,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.22555555" />
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.22555555" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -623,6 +630,13 @@
             <element signature="e#19862#20167#0" />
             <element signature="e#19772#20349#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2019_06_29_113345_add_profile_photo_to_users_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="28" column="54" selection-start-line="28" selection-start-column="54" selection-end-line="28" selection-end-column="54" />
         </state>
       </provider>
     </entry>
