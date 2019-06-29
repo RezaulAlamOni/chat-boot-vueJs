@@ -33,7 +33,12 @@
                                     </div>
                                     <div class="user_info">
                                         <span>{{user.name}}</span>
-                                        <p>Sahar left 7 mins ago</p>
+<!--                                        <p>{{user.Create}}</p>-->
+                                        <p v-if="user.type === 0 && user.sender === auth.id">You : {{user.message.substring(0,30)+".."}}</p>
+                                        <p v-if="user.type === 0 && user.sender === user.id"> {{user.message.substring(0,30)+".."}}</p>
+                                        <p v-if="user.type === 1 && user.sender === auth.id">You :photo</p>
+                                        <p v-if="user.type === 1 && user.sender === user.id">Photo</p>
+
                                     </div>
                                 </div>
                             </li>
@@ -107,22 +112,23 @@
                         <br>
                         <div class="input-group">
                             <div class="input-group-append">
-                                <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+                                <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i>
                                 <input
                                     style="position: absolute;
-                                          font-size: 50px;
+                                          font-size: 12px;
                                           opacity: 0;
-                                          right: 0;
-                                          top: 0;"
+                                         "
                                     type="file" id="file" ref="file"
                                     accept="image/png, image/jpeg, image/gif"
                                     @change="fileSend()"
                                 />
+                                </span>
+
                             </div>
 
                             <textarea name="" class="form-control type_msg" v-model.trim="messageText" style="padding-top: 18px"
                                       @keyup.enter.exact="sendMessage()" placeholder="Type your message..."></textarea>
-                            <div class="input-group-append">
+                            <div class="input-group-append" style="z-index: 999">
                                 <span class="input-group-text send_btn" v-on:click="sendMessage()"><i
                                     class="fas fa-location-arrow"></i></span>
                             </div>
@@ -181,7 +187,7 @@
                         }
                         setTimeout(function () {
                             $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-                        }, 1);
+                        }, 100);
                     });
                     app.Socket.on('logoutId', function (logoutId) {
                         var userLenth =  app.users.length
@@ -193,7 +199,7 @@
                         }
                     })
                     app.Socket.on('loginId', function (loginId) {
-                        var userLenth =  app.users.length
+                        var userLenth =  app.users.length;
                         var i;
                         for (i = 0;i < userLenth;i++) {
                             if (app.users[i].id===loginId) {
@@ -219,7 +225,7 @@
                         app.chatMessage = resp.data.msg;
                         setTimeout(function () {
                             $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-                        }, 1);
+                        }, 100);
                     })
                     .catch(function (resp) {
                         console.log(resp);
@@ -239,24 +245,32 @@
                                 sender: sendFrom,
                                 receiver: _this.chatUser.id,
                                 message: _this.messageText,
-                                type : 1
+                                type : 0
                             })
                             _this.Socket.emit('message', {
                                 sender: sendFrom,
                                 receiver: _this.chatUser.id,
                                 message: _this.messageText,
-                                type : 1
+                                type : 0
                             })
                             setTimeout(function () {
                                 $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-                            }, 1);
+                            }, 10);
+                            var userLenth =  _this.users.length;
+                            for (var i = 0;i < userLenth;i++) {
+                                if (_this.users[i].id === _this.chatUser.id) {
+                                    _this.users[i].sender = _this.auth.id;
+                                    _this.users[i].receiver = _this.chatUser.id;
+                                    _this.users[i].message = _this.messageText ;
+                                    _this.users[i].type = 0;
+                                }
+                            }
                             _this.messageText = '';
                         })
                         .catch(function (resp) {
                             alert("Failed to send Message");
                         });
                 }
-
             },
             fileSend(e){
                 var _this = this;
@@ -277,7 +291,7 @@
                         })
                     setTimeout(function () {
                         $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-                    }, 1);
+                    }, 100);
                         _this.Socket.emit('message', {
                             sender: _this.auth.id,
                             receiver: _this.chatUser.id,

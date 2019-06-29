@@ -18,6 +18,16 @@ class VueController extends Controller
         $user->status = 1;
         $user->save();
         $users = User::where('id','!=',auth()->id())->get();
+        foreach ($users as $key => $user) {
+            $message = Message::where('sender',auth()->id())->Where('receiver',$user->id)
+                                ->orWhere('receiver',auth()->id())->Where('sender',$user->id)
+                                ->orderBy('id','desc')->first();
+            $users[$key]['sender'] = $message['sender'];
+            $users[$key]['receiver'] = $message['receiver'];
+            $users[$key]['message'] = $message['message'];
+            $users[$key]['type'] = $message['type'];
+            $users[$key]['Create'] = $message['created_at'];
+        }
         return response()->json(['users'=>$users,'auth'=>auth()->user()],200);
     }
     public function userChatData(Request $request){
