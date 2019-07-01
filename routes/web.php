@@ -21,6 +21,7 @@ Route::get('/users/{id}','VueController@userChatData');
 Route::post('/users/message-send','VueController@messageSend');
 Route::post('/user-status/update/{id}','VueController@UpdateStatus');
 Route::post('/photo-upload','VueController@UploadPhoto');
+Route::post('/users/message-delete/{id}','VueController@DeleteMessage');
 
 Route::get( '/{vue_route?}', 'VueController@index' )->where( 'vue_route', '(.*)' );
 

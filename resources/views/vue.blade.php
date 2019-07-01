@@ -169,6 +169,7 @@
             background-color: #82ccdd;
             padding: 10px;
             position: relative;
+            word-wrap: break-word;
         }
         .msg_cotainer_send{
             margin-top: auto;
@@ -178,6 +179,7 @@
             background-color: #78e08f;
             padding: 10px;
             position: relative;
+            word-wrap: break-word;
         }
         .msg_time{
             position: absolute;

@@ -1839,6 +1839,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1850,7 +1869,9 @@ __webpack_require__.r(__webpack_exports__);
       chatMessage: [],
       messageText: '',
       Socket: null,
-      photo: ''
+      photo: '',
+      messageUpdate: '',
+      hideStatus: 0
     };
   },
   mounted: function mounted() {
@@ -1877,6 +1898,16 @@ __webpack_require__.r(__webpack_exports__);
         app.Socket.on('newMessage' + app.auth.id, function (res) {
           console.log(res);
           app.chatMessage.push(res);
+          var userLenth = app.users.length;
+          var i;
+
+          for (i = 0; i < userLenth; i++) {
+            if (app.users[i].id === res.sender) {
+              app.users[i].message = res.message;
+              app.users[i].sender = res.sender;
+              app.users[i].type = res.type;
+            }
+          }
 
           if (res.sender !== app.selectedUser) {
             $('#' + res.sender).css('background-color', '#d6cab9');
@@ -1910,6 +1941,15 @@ __webpack_require__.r(__webpack_exports__);
             }
           }
         });
+        app.Socket.on('removeMessageId', function (messageId) {
+          for (var i = 0; i < app.chatMessage.length; i++) {
+            if (app.chatMessage[i].id === messageId) {
+              app.chatMessage.splice(i, 1);
+              $('#' + app.selectedUser).click();
+              ;
+            }
+          }
+        });
       }
     },
     chatWithUser: function chatWithUser(id) {
@@ -1926,6 +1966,10 @@ __webpack_require__.r(__webpack_exports__);
         app.chatUser = resp.data.user;
         app.chatMessage = resp.data.msg;
         setTimeout(function () {
+          for (var i = 0; i < app.chatMessage.length; i++) {
+            $('#' + app.chatMessage[i].id).hide();
+          }
+
           $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
         }, 100);
       })["catch"](function (resp) {
@@ -2003,6 +2047,17 @@ __webpack_require__.r(__webpack_exports__);
           type: 1
         });
 
+        var userLenth = _this.users.length;
+
+        for (var i = 0; i < userLenth; i++) {
+          if (_this.users[i].id === _this.chatUser.id) {
+            _this.users[i].sender = _this.auth.id;
+            _this.users[i].receiver = _this.chatUser.id;
+            _this.users[i].message = _this.photo.name;
+            _this.users[i].type = 1;
+          }
+        }
+
         setTimeout(function () {
           $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
         }, 100);
@@ -2019,6 +2074,29 @@ __webpack_require__.r(__webpack_exports__);
     },
     removeFile: function removeFile() {
       this.photo = '';
+    },
+    showUpdateField: function showUpdateField(id, message) {
+      this.messageUpdate = message;
+
+      if (this.hideStatus === 0) {
+        $('#' + id).show();
+        this.hideStatus = 1;
+      } else {
+        $('#' + id).hide();
+        this.hideStatus = 0;
+      }
+    },
+    DeleteMessage: function DeleteMessage(message_id, index) {
+      var app = this;
+
+      if (confirm('Do you want to delete ?')) {
+        axios.post('/users/message-delete/' + message_id).then(function (resp) {
+          app.chatMessage.splice(index, 1);
+          app.Socket.emit('removeMessage', {
+            messageId: message_id
+          });
+        });
+      }
     }
   }
 });
@@ -37466,10 +37544,12 @@ var render = function() {
               _c("div", { staticClass: "user_info" }, [
                 _c("span", [
                   _vm._v("Chat with "),
-                  _c("b", [_vm._v(_vm._s(_vm.chatUser.name))])
+                  _c("b", { staticClass: "text-info" }, [
+                    _vm._v(_vm._s(_vm.chatUser.name))
+                  ])
                 ]),
                 _vm._v(" "),
-                _c("p", [_vm._v("1767 Messages")])
+                _c("p", [_vm._v(_vm._s(_vm.chatMessage.length) + " Messages")])
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "video_cam" })
@@ -37486,7 +37566,7 @@ var render = function() {
               staticClass: "card-body msg_card_body messageSection",
               attrs: { id: "chatDiv" }
             },
-            _vm._l(_vm.chatMessage, function(message) {
+            _vm._l(_vm.chatMessage, function(message, index) {
               return _c("div", [
                 message.sender === _vm.chatUser.id
                   ? _c("div", [
@@ -37501,26 +37581,33 @@ var render = function() {
                             })
                           ]),
                           _vm._v(" "),
-                          _c("div", { staticClass: "msg_cotainer" }, [
-                            message.type === 1
-                              ? _c("img", {
-                                  staticStyle: { "max-width": "100%" },
-                                  attrs: {
-                                    src: "/image/" + message.message,
-                                    alt: "image"
-                                  }
-                                })
-                              : _c("div", [_vm._v(_vm._s(message.message))]),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "msg_time",
-                                staticStyle: { "min-width": "200px" }
-                              },
-                              [_vm._v("8:40 AM, Today")]
-                            )
-                          ])
+                          _c(
+                            "div",
+                            {
+                              staticClass: "msg_cotainer",
+                              staticStyle: { cursor: "pointer" }
+                            },
+                            [
+                              message.type === 1
+                                ? _c("img", {
+                                    staticStyle: { "max-width": "100%" },
+                                    attrs: {
+                                      src: "/image/" + message.message,
+                                      alt: "image"
+                                    }
+                                  })
+                                : _c("div", [_vm._v(_vm._s(message.message))]),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass: "msg_time",
+                                  staticStyle: { "min-width": "200px" }
+                                },
+                                [_vm._v("8:40 AM, Today")]
+                              )
+                            ]
+                          )
                         ]
                       )
                     ])
@@ -37532,26 +37619,143 @@ var render = function() {
                         "div",
                         { staticClass: "d-flex justify-content-end mb-4" },
                         [
-                          _c("div", { staticClass: "msg_cotainer_send" }, [
-                            message.type === 1
-                              ? _c("img", {
-                                  staticStyle: { "max-width": "100%" },
-                                  attrs: {
-                                    src: "/image/" + message.message,
-                                    alt: "image"
-                                  }
-                                })
-                              : _c("div", [_vm._v(_vm._s(message.message))]),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "msg_time_send",
-                                staticStyle: { "min-width": "80px" }
-                              },
-                              [_vm._v("8:55 AM, Today")]
-                            )
-                          ]),
+                          _c(
+                            "div",
+                            {
+                              staticClass: "msg_cotainer_send",
+                              staticStyle: { cursor: "pointer" }
+                            },
+                            [
+                              _c("div", [
+                                message.type === 1
+                                  ? _c("img", {
+                                      staticStyle: { "max-width": "100%" },
+                                      attrs: {
+                                        src: "/image/" + message.message,
+                                        alt: "image"
+                                      }
+                                    })
+                                  : _c("div", [
+                                      _c("div", [
+                                        _vm._v(
+                                          "\n                                                    " +
+                                            _vm._s(message.message) +
+                                            "\n                                                "
+                                        )
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("div", [
+                                        _c(
+                                          "a",
+                                          {
+                                            staticClass: "badge badge-danger",
+                                            attrs: { title: "Remove Message" }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass: "fa fa-trash",
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.DeleteMessage(
+                                                    message.id,
+                                                    index
+                                                  )
+                                                }
+                                              }
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "a",
+                                          {
+                                            staticClass:
+                                              "badge badge-warning pl-1",
+                                            attrs: { title: "Edit Message" }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass: "fa fa-edit",
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.showUpdateField(
+                                                    message.id,
+                                                    message.message
+                                                  )
+                                                }
+                                              }
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: _vm.messageUpdate,
+                                              expression: "messageUpdate"
+                                            }
+                                          ],
+                                          staticClass:
+                                            "form-control edit-Field",
+                                          attrs: {
+                                            type: "text",
+                                            hidden: "",
+                                            id: message.id
+                                          },
+                                          domProps: {
+                                            value: _vm.messageUpdate
+                                          },
+                                          on: {
+                                            keyup: function($event) {
+                                              if (
+                                                !$event.type.indexOf("key") &&
+                                                _vm._k(
+                                                  $event.keyCode,
+                                                  "enter",
+                                                  13,
+                                                  $event.key,
+                                                  "Enter"
+                                                )
+                                              ) {
+                                                return null
+                                              }
+                                              if (
+                                                $event.ctrlKey ||
+                                                $event.shiftKey ||
+                                                $event.altKey ||
+                                                $event.metaKey
+                                              ) {
+                                                return null
+                                              }
+                                              return _vm.UpdateMessage(
+                                                message.id
+                                              )
+                                            },
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.messageUpdate =
+                                                $event.target.value
+                                            }
+                                          }
+                                        })
+                                      ])
+                                    ]),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "msg_time_send",
+                                    staticStyle: { "min-width": "80px" }
+                                  },
+                                  [_vm._v("8:55 AM, Today")]
+                                )
+                              ])
+                            ]
+                          ),
                           _vm._v(" "),
                           _vm._m(3, true)
                         ]

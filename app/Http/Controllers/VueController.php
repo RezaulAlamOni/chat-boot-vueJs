@@ -78,4 +78,14 @@ class VueController extends Controller
             return response()->json('failed',500);
         }
     }
+    public function DeleteMessage(Request $request){
+        $messageId = $request->id;
+        $message = Message::where('id',$messageId)->delete();
+        if($message){
+            return response()->json('success',200);
+        }else{
+            return response()->json('failed',500);
+        }
+
+    }
 }

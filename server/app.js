@@ -30,4 +30,8 @@ io.on('connection', function(socket) {
         console.log(data)
         io.emit('loginId',data);
     });
+    socket.on('removeMessage', function(data) {
+        console.log(data)
+        io.emit('removeMessageId',data.messageId);
+    });
 });
