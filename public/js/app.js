@@ -1858,6 +1858,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -37619,6 +37628,35 @@ var render = function() {
                         "div",
                         { staticClass: "d-flex justify-content-end mb-4" },
                         [
+                          _c("div", { staticClass: "dropdown" }, [
+                            _c("button", {
+                              staticClass: "btn btn-primary dropdown-toggle",
+                              attrs: {
+                                type: "button",
+                                "data-toggle": "dropdown"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("ul", { staticClass: "dropdown-menu" }, [
+                              _vm._m(3, true),
+                              _vm._v(" "),
+                              _c("li", [
+                                _c(
+                                  "a",
+                                  {
+                                    attrs: { href: "JavaScript:Void(0)" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.deleteMessage(message.id)
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Delete")]
+                                )
+                              ])
+                            ])
+                          ]),
+                          _vm._v(" "),
                           _c(
                             "div",
                             {
@@ -37640,108 +37678,8 @@ var render = function() {
                                         _vm._v(
                                           "\n                                                    " +
                                             _vm._s(message.message) +
-                                            "\n                                                "
+                                            "\n\n"
                                         )
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("div", [
-                                        _c(
-                                          "a",
-                                          {
-                                            staticClass: "badge badge-danger",
-                                            attrs: { title: "Remove Message" }
-                                          },
-                                          [
-                                            _c("i", {
-                                              staticClass: "fa fa-trash",
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.DeleteMessage(
-                                                    message.id,
-                                                    index
-                                                  )
-                                                }
-                                              }
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "a",
-                                          {
-                                            staticClass:
-                                              "badge badge-warning pl-1",
-                                            attrs: { title: "Edit Message" }
-                                          },
-                                          [
-                                            _c("i", {
-                                              staticClass: "fa fa-edit",
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.showUpdateField(
-                                                    message.id,
-                                                    message.message
-                                                  )
-                                                }
-                                              }
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c("input", {
-                                          directives: [
-                                            {
-                                              name: "model",
-                                              rawName: "v-model",
-                                              value: _vm.messageUpdate,
-                                              expression: "messageUpdate"
-                                            }
-                                          ],
-                                          staticClass:
-                                            "form-control edit-Field",
-                                          attrs: {
-                                            type: "text",
-                                            hidden: "",
-                                            id: message.id
-                                          },
-                                          domProps: {
-                                            value: _vm.messageUpdate
-                                          },
-                                          on: {
-                                            keyup: function($event) {
-                                              if (
-                                                !$event.type.indexOf("key") &&
-                                                _vm._k(
-                                                  $event.keyCode,
-                                                  "enter",
-                                                  13,
-                                                  $event.key,
-                                                  "Enter"
-                                                )
-                                              ) {
-                                                return null
-                                              }
-                                              if (
-                                                $event.ctrlKey ||
-                                                $event.shiftKey ||
-                                                $event.altKey ||
-                                                $event.metaKey
-                                              ) {
-                                                return null
-                                              }
-                                              return _vm.UpdateMessage(
-                                                message.id
-                                              )
-                                            },
-                                            input: function($event) {
-                                              if ($event.target.composing) {
-                                                return
-                                              }
-                                              _vm.messageUpdate =
-                                                $event.target.value
-                                            }
-                                          }
-                                        })
                                       ])
                                     ]),
                                 _vm._v(" "),
@@ -37757,7 +37695,7 @@ var render = function() {
                             ]
                           ),
                           _vm._v(" "),
-                          _vm._m(3, true)
+                          _vm._m(4, true)
                         ]
                       )
                     ])
@@ -37919,6 +37857,14 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("li", [_c("i", { staticClass: "fas fa-ban" }), _vm._v(" Block")])
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [
+      _c("a", { attrs: { href: "JavaScript:Void(0)" } }, [_vm._v("Edit")])
     ])
   },
   function() {

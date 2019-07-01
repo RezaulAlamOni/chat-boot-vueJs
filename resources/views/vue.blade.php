@@ -247,6 +247,14 @@
             color: #ffc5d8;
             background-color: #1e1aff !important;
         }
+        .justify-content-end .dropdown {
+            float: right;
+            display: none;
+        }
+        .justify-content-end .dropdown:hover {
+            display: block;
+        }
+
     </style>
 </head>
 <!--Coded With Love By Mutiullah Samim-->
