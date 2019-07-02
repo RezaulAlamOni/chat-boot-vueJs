@@ -33,9 +33,11 @@
                                     </div>
                                     <div class="user_info">
                                         <span>{{user.name}}</span>
-<!--                                        <p>{{user.Create}}</p>-->
-                                        <p v-if="user.type === 0 && user.sender === auth.id">You : {{user.message.substring(0,30)+".."}}</p>
-                                        <p v-if="user.type === 0 && user.sender === user.id"> {{user.message.substring(0,30)+".."}}</p>
+                                        <!--                                        <p>{{user.Create}}</p>-->
+                                        <p v-if="user.type === 0 && user.sender === auth.id">You :
+                                            {{user.message.substring(0,30)+".."}}</p>
+                                        <p v-if="user.type === 0 && user.sender === user.id">
+                                            {{user.message.substring(0,30)+".."}}</p>
                                         <p v-if="user.type === 1 && user.sender === auth.id">You :photo</p>
                                         <p v-if="user.type === 1 && user.sender === user.id">Photo</p>
 
@@ -83,36 +85,32 @@
                                         <img v-bind:src="'/image/p1.png'" class="rounded-circle user_img_msg">
                                     </div>
                                     <div class="msg_cotainer" style="cursor: pointer;">
-                                        <img v-if="message.type === 1" v-bind:src="'/image/'+message.message" alt="image"  style="max-width: 100%">
-                                            <div v-else="">{{message.message}}</div>
+                                        <img v-if="message.type === 1" v-bind:src="'/image/'+message.message"
+                                             alt="image" style="max-width: 100%">
+                                        <div v-else="">{{message.message}}</div>
                                         <span class="msg_time" style="min-width: 200px">8:40 AM, Today</span>
                                     </div>
                                 </div>
                             </div>
                             <div v-if="message.sender === auth.id">
                                 <div class="d-flex justify-content-end mb-4">
-                                    <div class="dropdown">
-                                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                            <!--<i class="fa fa-ellipsis-v dropdown-toggle" data-toggle="dropdown"></i>--></button>
-                                        <ul class="dropdown-menu">
-                                            <li ><a href="JavaScript:Void(0)">Edit</a></li>
-                                            <li><a href="JavaScript:Void(0)" @click="deleteMessage(message.id)">Delete</a></li>
-                                        </ul>
+                                    <div class="dropdown" style="padding-right: 2%">
+                                        <a class="badge badge-danger" title="Remove Message" style="cursor: pointer">
+                                            <i class="fa fa-trash" v-on:click="DeleteMessage(message.id,index)"></i>
+                                        </a><br>
+                                        <a class="badge badge-warning pl-1" title="Edit Message"
+                                           style="cursor: pointer">
+                                            <i class="fa fa-edit"
+                                               v-on:click="showUpdateField(message.id,index,message.message)"></i>
+                                        </a>
                                     </div>
-                                    <div class="msg_cotainer_send" style="cursor:pointer;" >
+                                    <div class="msg_cotainer_send" style="cursor:pointer;">
                                         <div>
-                                            <img v-if="message.type === 1" v-bind:src="'/image/'+message.message" alt="image" style="max-width: 100%">
+                                            <img v-if="message.type === 1" v-bind:src="'/image/'+message.message"
+                                                 alt="image" style="max-width: 100%">
                                             <div v-else="">
                                                 <div>
                                                     {{message.message}}
-
-<!--                                                    <a class="badge badge-danger" title="Remove Message"><i class="fa fa-trash" v-on:click="DeleteMessage(message.id,index)"></i></a>-->
-<!--                                                    <a class="badge badge-warning pl-1" title="Edit Message"><i class="fa fa-edit"  v-on:click="showUpdateField(message.id,message.message)"></i></a>-->
-
-<!--                                                    <input type="text" class="form-control edit-Field" hidden-->
-<!--                                                           v-model="messageUpdate" :id="message.id"-->
-<!--                                                           @keyup.enter.exact="UpdateMessage(message.id)"-->
-<!--                                                    >-->
                                                 </div>
 
                                             </div>
@@ -134,9 +132,9 @@
                     </div>
 
                     <div class="card-footer messageSection">
-<!--                        <div class="large-12 medium-12 small-12 cell">-->
-<!--                            <div class="file-listing">{{ photo.name }} <span class="remove-file" v-on:click="removeFile()">Remove</span></div>-->
-<!--                        </div>-->
+                        <!--                        <div class="large-12 medium-12 small-12 cell">-->
+                        <!--                            <div class="file-listing">{{ photo.name }} <span class="remove-file" v-on:click="removeFile()">Remove</span></div>-->
+                        <!--                        </div>-->
                         <br>
                         <div class="input-group">
                             <div class="input-group-append">
@@ -154,7 +152,8 @@
 
                             </div>
 
-                            <textarea name="" class="form-control type_msg" v-model.trim="messageText" style="padding-top: 18px"
+                            <textarea name="" class="form-control type_msg" v-model.trim="messageText"
+                                      style="padding-top: 18px"
                                       @keyup.enter.exact="sendMessage()" placeholder="Type your message..."></textarea>
                             <div class="input-group-append" style="z-index: 999">
                                 <span class="input-group-text send_btn" v-on:click="sendMessage()"><i
@@ -180,9 +179,9 @@
                 chatMessage: [],
                 messageText: '',
                 Socket: null,
-                photo:'',
-                messageUpdate: '',
-                hideStatus:0
+                photo: '',
+                update_index: 0,
+                update_id: 0,
             }
         },
         mounted() {
@@ -205,14 +204,14 @@
                 let app = this;
                 if (app.Socket == null) {
                     app.Socket = io.connect('http://localhost:3000/');
-                    app.Socket.emit('loginId',app.auth.id)
+                    app.Socket.emit('loginId', app.auth.id)
                     app.Socket.on('newMessage' + app.auth.id, function (res) {
                         console.log(res);
                         app.chatMessage.push(res)
-                        var userLenth =  app.users.length;
+                        var userLenth = app.users.length;
                         var i;
-                        for (i = 0;i < userLenth;i++) {
-                            if (app.users[i].id===res.sender) {
+                        for (i = 0; i < userLenth; i++) {
+                            if (app.users[i].id === res.sender) {
                                 app.users[i].message = res.message;
                                 app.users[i].sender = res.sender;
                                 app.users[i].type = res.type;
@@ -220,7 +219,6 @@
                         }
                         if (res.sender !== app.selectedUser) {
                             $('#' + res.sender).css('background-color', '#d6cab9')
-
                             if (app.selectedUser === 0) {
                                 $('#' + res.sender).click();
                             }
@@ -230,33 +228,41 @@
                         }, 100);
                     });
                     app.Socket.on('logoutId', function (logoutId) {
-                        var userLenth =  app.users.length
+                        var userLenth = app.users.length
                         var i;
-                        for (i = 0;i < userLenth;i++) {
-                            if (app.users[i].id===logoutId) {
+                        for (i = 0; i < userLenth; i++) {
+                            if (app.users[i].id === logoutId) {
                                 app.users[i].status = 0;
                             }
                         }
                     })
                     app.Socket.on('loginId', function (loginId) {
-                        var userLenth =  app.users.length;
+                        var userLenth = app.users.length;
                         var i;
-                        for (i = 0;i < userLenth;i++) {
-                            if (app.users[i].id===loginId) {
+                        for (i = 0; i < userLenth; i++) {
+                            if (app.users[i].id === loginId) {
                                 app.users[i].status = 1;
                             }
                         }
                     })
                     app.Socket.on('removeMessageId', function (messageId) {
-                        for (var i = 0;i < app.chatMessage.length;i++) {
-                            if (app.chatMessage[i].id===messageId) {
-                                app.chatMessage.splice(i,1);
-                                $('#' + app.selectedUser).click();;
+                        for (var i = 0; i < app.chatMessage.length; i++) {
+                            if (app.chatMessage[i].id === messageId) {
+                                app.chatMessage.splice(i, 1);
+                                $('#' + app.selectedUser).click();
+                                ;
 
                             }
                         }
                     })
-                }
+                    app.Socket.on('updateMessageId', function (data) {
+                        for (var i = 0; i < app.chatMessage.length; i++) {
+                            if (app.chatMessage[i].id === data.messageId) {
+                                app.chatMessage[i].message = data.message;
+                            }
+                        }
+                        })
+                    }
             },
             chatWithUser(id) {
                 this.selectedUser = id;
@@ -273,8 +279,8 @@
                         app.chatUser = resp.data.user;
                         app.chatMessage = resp.data.msg;
                         setTimeout(function () {
-                            for (var i=0;i<app.chatMessage.length;i++){
-                                $('#'+app.chatMessage[i].id).hide()
+                            for (var i = 0; i < app.chatMessage.length; i++) {
+                                $('#' + app.chatMessage[i].id).hide()
                             }
                             $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
                         }, 100);
@@ -285,46 +291,52 @@
                     });
             },
             sendMessage() {
-                var _this = this;
-                var messageText = _this.messageText;
-                var sendTo = _this.chatUser.id;
-                var sendFrom = _this.auth.id;
-                var data = {sendTo: sendTo, sendFrom: sendFrom, text: messageText,}
-                if (_this.messageText.length !== 0 ){
-                    axios.post('/users/message-send', data)
-                        .then(function (resp) {
-                            _this.chatMessage.push({
-                                sender: sendFrom,
-                                receiver: _this.chatUser.id,
-                                message: _this.messageText,
-                                type : 0
-                            })
-                            _this.Socket.emit('message', {
-                                sender: sendFrom,
-                                receiver: _this.chatUser.id,
-                                message: _this.messageText,
-                                type : 0
-                            })
-                            setTimeout(function () {
-                                $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-                            }, 10);
-                            var userLenth =  _this.users.length;
-                            for (var i = 0;i < userLenth;i++) {
-                                if (_this.users[i].id === _this.chatUser.id) {
-                                    _this.users[i].sender = _this.auth.id;
-                                    _this.users[i].receiver = _this.chatUser.id;
-                                    _this.users[i].message = _this.messageText ;
-                                    _this.users[i].type = 0;
+
+                if (this.update_index !== 0 && this.update_id !== 0) {
+                    this.updateMessage();
+                } else{
+                    var _this = this;
+                    var messageText = _this.messageText;
+                    var sendTo = _this.chatUser.id;
+                    var sendFrom = _this.auth.id;
+                    var data = {sendTo: sendTo, sendFrom: sendFrom, text: messageText,}
+                    if (_this.messageText.length !== 0) {
+                        axios.post('/users/message-send', data)
+                            .then(function (resp) {
+                                _this.chatMessage.push({
+                                    sender: sendFrom,
+                                    receiver: _this.chatUser.id,
+                                    message: _this.messageText,
+                                    type: 0
+                                })
+                                _this.Socket.emit('message', {
+                                    sender: sendFrom,
+                                    receiver: _this.chatUser.id,
+                                    message: _this.messageText,
+                                    type: 0
+                                })
+                                setTimeout(function () {
+                                    $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
+                                }, 100);
+                                var userLenth = _this.users.length;
+                                for (var i = 0; i < userLenth; i++) {
+                                    if (_this.users[i].id === _this.chatUser.id) {
+                                        _this.users[i].sender = _this.auth.id;
+                                        _this.users[i].receiver = _this.chatUser.id;
+                                        _this.users[i].message = _this.messageText;
+                                        _this.users[i].type = 0;
+                                    }
                                 }
-                            }
-                            _this.messageText = '';
-                        })
-                        .catch(function (resp) {
-                            alert("Failed to send Message");
-                        });
+                                _this.messageText = '';
+                                $('#' + _this.chatUser.id).click();
+                            })
+                            .catch(function (resp) {
+                                alert("Failed to send Message");
+                            });
+                    }
                 }
             },
-            fileSend(e){
+            fileSend(e) {
                 var _this = this;
                 this.photo = this.$refs.file.files[0];
                 let formData = new FormData();
@@ -332,22 +344,21 @@
                 formData.append('sender', this.auth.id);
                 formData.append('receiver', this.chatUser.id);
 
-                axios.post( '/photo-upload', formData, {headers: {'Content-Type': 'multipart/form-data'}}).
-                    then(function(res){
-                        console.log(res);
-                        _this.chatMessage.push({
-                            sender: _this.auth.id,
-                            receiver: _this.chatUser.id,
-                            message: _this.photo.name,
-                            type : 1
-                        })
+                axios.post('/photo-upload', formData, {headers: {'Content-Type': 'multipart/form-data'}}).then(function (res) {
+                    console.log(res);
+                    _this.chatMessage.push({
+                        sender: _this.auth.id,
+                        receiver: _this.chatUser.id,
+                        message: _this.photo.name,
+                        type: 1
+                    })
 
-                    var userLenth =  _this.users.length;
-                    for (var i = 0;i < userLenth;i++) {
+                    var userLenth = _this.users.length;
+                    for (var i = 0; i < userLenth; i++) {
                         if (_this.users[i].id === _this.chatUser.id) {
                             _this.users[i].sender = _this.auth.id;
                             _this.users[i].receiver = _this.chatUser.id;
-                            _this.users[i].message = _this.photo.name ;
+                            _this.users[i].message = _this.photo.name;
                             _this.users[i].type = 1;
                         }
                     }
@@ -356,43 +367,62 @@
                     setTimeout(function () {
                         $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
                     }, 100);
-                        _this.Socket.emit('message', {
-                            sender: _this.auth.id,
-                            receiver: _this.chatUser.id,
-                            message: _this.photo.name,
-                            type : 1
-                        })
+                    _this.Socket.emit('message', {
+                        sender: _this.auth.id,
+                        receiver: _this.chatUser.id,
+                        message: _this.photo.name,
+                        type: 1
                     })
-                    .catch(function(res){
+                })
+                    .catch(function (res) {
                         console.log(res);
                     });
             },
-            removeFile(){
+            removeFile() {
                 this.photo = '';
             },
-            showUpdateField(id,message){
-                this.messageUpdate = message;
-                if (this.hideStatus===0){
-                    $('#'+id).show()
-                    this.hideStatus = 1;
-                } else {
-                    $('#'+id).hide()
-                    this.hideStatus = 0;
-                }
-
-
+            showUpdateField(id, index, message) {
+                this.messageText = message;
+                this.update_index = index;
+                this.update_id = id;
+                alert(id)
             },
-            DeleteMessage(message_id,index){
+            DeleteMessage(message_id, index) {
                 var app = this;
                 if (confirm('Do you want to delete ?')) {
-                    axios.post('/users/message-delete/'+message_id)
+                    axios.post('/users/message-delete/' + message_id)
                         .then(function (resp) {
-                            app.chatMessage.splice(index,1)
+                            app.chatMessage.splice(index, 1)
                             app.Socket.emit('removeMessage', {
                                 messageId: message_id
                             })
                         });
 
+                }
+            },
+            updateMessage() {
+                var _this = this;
+                var data = {messageId : _this.update_id, text: _this.messageText}
+                if (_this.messageText.length !== 0) {
+                    console.log(data)
+                    axios.post('/users/message-update', data)
+                        .then(function (resp) {
+                            _this.Socket.emit('updateMessage', {
+                                messageId : _this.update_id,
+                                message : _this.messageText
+                            })
+                            for (var i = 0; i < _this.chatMessage.length; i++) {
+                                if (_this.chatMessage[i].id === _this.update_id) {
+                                    _this.chatMessage[i].message = _this.messageText;
+                                }
+                            }
+                            _this.update_id = 0;
+                            _this.update_index = 0;
+                            _this.messageText = '';
+                        })
+                        .catch(function (resp) {
+                            alert("Failed to update Message");
+                        });
                 }
             }
         }

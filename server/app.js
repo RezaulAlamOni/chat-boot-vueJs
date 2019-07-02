@@ -34,4 +34,8 @@ io.on('connection', function(socket) {
         console.log(data)
         io.emit('removeMessageId',data.messageId);
     });
+    socket.on('updateMessage', function(data) {
+        console.log(data)
+        io.emit('updateMessageId',data);
+    });
 });

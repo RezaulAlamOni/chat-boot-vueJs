@@ -62,6 +62,15 @@ class VueController extends Controller
         return response()->json(['status'=>'success'],200);
 
     }
+    public function messageUpdate(Request $request){
+        $id = $request->messageId;
+        $text = $request->text;
+        $message = Message::where('id',$id)->first();
+        $message->message = $text;
+        $message->save();
+        return response()->json(['status'=>'success'],200);
+
+    }
     public function UploadPhoto(Request $request){
         $sender = $request->sender;
         $receiver = $request->receiver;

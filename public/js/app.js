@@ -1866,7 +1866,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1879,8 +1878,8 @@ __webpack_require__.r(__webpack_exports__);
       messageText: '',
       Socket: null,
       photo: '',
-      messageUpdate: '',
-      hideStatus: 0
+      update_index: 0,
+      update_id: 0
     };
   },
   mounted: function mounted() {
@@ -1959,6 +1958,13 @@ __webpack_require__.r(__webpack_exports__);
             }
           }
         });
+        app.Socket.on('updateMessageId', function (data) {
+          for (var i = 0; i < app.chatMessage.length; i++) {
+            if (app.chatMessage[i].id === data.messageId) {
+              app.chatMessage[i].message = data.message;
+            }
+          }
+        });
       }
     },
     chatWithUser: function chatWithUser(id) {
@@ -1987,51 +1993,56 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     sendMessage: function sendMessage() {
-      var _this = this;
+      if (this.update_index !== 0 && this.update_id !== 0) {
+        this.updateMessage();
+      } else {
+        var _this = this;
 
-      var messageText = _this.messageText;
-      var sendTo = _this.chatUser.id;
-      var sendFrom = _this.auth.id;
-      var data = {
-        sendTo: sendTo,
-        sendFrom: sendFrom,
-        text: messageText
-      };
+        var messageText = _this.messageText;
+        var sendTo = _this.chatUser.id;
+        var sendFrom = _this.auth.id;
+        var data = {
+          sendTo: sendTo,
+          sendFrom: sendFrom,
+          text: messageText
+        };
 
-      if (_this.messageText.length !== 0) {
-        axios.post('/users/message-send', data).then(function (resp) {
-          _this.chatMessage.push({
-            sender: sendFrom,
-            receiver: _this.chatUser.id,
-            message: _this.messageText,
-            type: 0
-          });
+        if (_this.messageText.length !== 0) {
+          axios.post('/users/message-send', data).then(function (resp) {
+            _this.chatMessage.push({
+              sender: sendFrom,
+              receiver: _this.chatUser.id,
+              message: _this.messageText,
+              type: 0
+            });
 
-          _this.Socket.emit('message', {
-            sender: sendFrom,
-            receiver: _this.chatUser.id,
-            message: _this.messageText,
-            type: 0
-          });
+            _this.Socket.emit('message', {
+              sender: sendFrom,
+              receiver: _this.chatUser.id,
+              message: _this.messageText,
+              type: 0
+            });
 
-          setTimeout(function () {
-            $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
-          }, 10);
-          var userLenth = _this.users.length;
+            setTimeout(function () {
+              $("#chatDiv")[0].scrollTop = $("#chatDiv")[0].scrollHeight;
+            }, 100);
+            var userLenth = _this.users.length;
 
-          for (var i = 0; i < userLenth; i++) {
-            if (_this.users[i].id === _this.chatUser.id) {
-              _this.users[i].sender = _this.auth.id;
-              _this.users[i].receiver = _this.chatUser.id;
-              _this.users[i].message = _this.messageText;
-              _this.users[i].type = 0;
+            for (var i = 0; i < userLenth; i++) {
+              if (_this.users[i].id === _this.chatUser.id) {
+                _this.users[i].sender = _this.auth.id;
+                _this.users[i].receiver = _this.chatUser.id;
+                _this.users[i].message = _this.messageText;
+                _this.users[i].type = 0;
+              }
             }
-          }
 
-          _this.messageText = '';
-        })["catch"](function (resp) {
-          alert("Failed to send Message");
-        });
+            _this.messageText = '';
+            $('#' + _this.chatUser.id).click();
+          })["catch"](function (resp) {
+            alert("Failed to send Message");
+          });
+        }
       }
     },
     fileSend: function fileSend(e) {
@@ -2084,16 +2095,11 @@ __webpack_require__.r(__webpack_exports__);
     removeFile: function removeFile() {
       this.photo = '';
     },
-    showUpdateField: function showUpdateField(id, message) {
-      this.messageUpdate = message;
-
-      if (this.hideStatus === 0) {
-        $('#' + id).show();
-        this.hideStatus = 1;
-      } else {
-        $('#' + id).hide();
-        this.hideStatus = 0;
-      }
+    showUpdateField: function showUpdateField(id, index, message) {
+      this.messageText = message;
+      this.update_index = index;
+      this.update_id = id;
+      alert(id);
     },
     DeleteMessage: function DeleteMessage(message_id, index) {
       var app = this;
@@ -2104,6 +2110,36 @@ __webpack_require__.r(__webpack_exports__);
           app.Socket.emit('removeMessage', {
             messageId: message_id
           });
+        });
+      }
+    },
+    updateMessage: function updateMessage() {
+      var _this = this;
+
+      var data = {
+        messageId: _this.update_id,
+        text: _this.messageText
+      };
+
+      if (_this.messageText.length !== 0) {
+        console.log(data);
+        axios.post('/users/message-update', data).then(function (resp) {
+          _this.Socket.emit('updateMessage', {
+            messageId: _this.update_id,
+            message: _this.messageText
+          });
+
+          for (var i = 0; i < _this.chatMessage.length; i++) {
+            if (_this.chatMessage[i].id === _this.update_id) {
+              _this.chatMessage[i].message = _this.messageText;
+            }
+          }
+
+          _this.update_id = 0;
+          _this.update_index = 0;
+          _this.messageText = '';
+        })["catch"](function (resp) {
+          alert("Failed to update Message");
         });
       }
     }
@@ -37496,7 +37532,7 @@ var render = function() {
                         user.type === 0 && user.sender === _vm.auth.id
                           ? _c("p", [
                               _vm._v(
-                                "You : " +
+                                "You :\n                                        " +
                                   _vm._s(user.message.substring(0, 30) + "..")
                               )
                             ])
@@ -37505,7 +37541,7 @@ var render = function() {
                         user.type === 0 && user.sender === user.id
                           ? _c("p", [
                               _vm._v(
-                                " " +
+                                "\n                                        " +
                                   _vm._s(user.message.substring(0, 30) + "..")
                               )
                             ])
@@ -37628,34 +37664,60 @@ var render = function() {
                         "div",
                         { staticClass: "d-flex justify-content-end mb-4" },
                         [
-                          _c("div", { staticClass: "dropdown" }, [
-                            _c("button", {
-                              staticClass: "btn btn-primary dropdown-toggle",
-                              attrs: {
-                                type: "button",
-                                "data-toggle": "dropdown"
-                              }
-                            }),
-                            _vm._v(" "),
-                            _c("ul", { staticClass: "dropdown-menu" }, [
-                              _vm._m(3, true),
-                              _vm._v(" "),
-                              _c("li", [
-                                _c(
-                                  "a",
-                                  {
-                                    attrs: { href: "JavaScript:Void(0)" },
+                          _c(
+                            "div",
+                            {
+                              staticClass: "dropdown",
+                              staticStyle: { "padding-right": "2%" }
+                            },
+                            [
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "badge badge-danger",
+                                  staticStyle: { cursor: "pointer" },
+                                  attrs: { title: "Remove Message" }
+                                },
+                                [
+                                  _c("i", {
+                                    staticClass: "fa fa-trash",
                                     on: {
                                       click: function($event) {
-                                        return _vm.deleteMessage(message.id)
+                                        return _vm.DeleteMessage(
+                                          message.id,
+                                          index
+                                        )
                                       }
                                     }
-                                  },
-                                  [_vm._v("Delete")]
-                                )
-                              ])
-                            ])
-                          ]),
+                                  })
+                                ]
+                              ),
+                              _c("br"),
+                              _vm._v(" "),
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "badge badge-warning pl-1",
+                                  staticStyle: { cursor: "pointer" },
+                                  attrs: { title: "Edit Message" }
+                                },
+                                [
+                                  _c("i", {
+                                    staticClass: "fa fa-edit",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.showUpdateField(
+                                          message.id,
+                                          index,
+                                          message.message
+                                        )
+                                      }
+                                    }
+                                  })
+                                ]
+                              )
+                            ]
+                          ),
                           _vm._v(" "),
                           _c(
                             "div",
@@ -37676,9 +37738,9 @@ var render = function() {
                                   : _c("div", [
                                       _c("div", [
                                         _vm._v(
-                                          "\n                                                    " +
+                                          "\n                                                " +
                                             _vm._s(message.message) +
-                                            "\n\n"
+                                            "\n                                            "
                                         )
                                       ])
                                     ]),
@@ -37695,7 +37757,7 @@ var render = function() {
                             ]
                           ),
                           _vm._v(" "),
-                          _vm._m(4, true)
+                          _vm._m(3, true)
                         ]
                       )
                     ])
@@ -37857,14 +37919,6 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("li", [_c("i", { staticClass: "fas fa-ban" }), _vm._v(" Block")])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", [
-      _c("a", { attrs: { href: "JavaScript:Void(0)" } }, [_vm._v("Edit")])
     ])
   },
   function() {
