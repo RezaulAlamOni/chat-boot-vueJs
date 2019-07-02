@@ -253,6 +253,14 @@
                 margin-bottom: 15px !important;
             }
         }
+       /* .action-section{
+            display: none;
+        }*/
+        .msg_cotainer_send:hover .action-section {
+            display: inline-block;
+        }
+
+
     </style>
 
     <!-- Styles -->

@@ -94,17 +94,17 @@
                             </div>
                             <div v-if="message.sender === auth.id">
                                 <div class="d-flex justify-content-end mb-4">
-                                    <div class="dropdown" style="padding-right: 2%">
-                                        <a class="badge badge-danger" title="Remove Message" style="cursor: pointer">
-                                            <i class="fa fa-trash" v-on:click="DeleteMessage(message.id,index)"></i>
-                                        </a><br>
-                                        <a class="badge badge-warning pl-1" title="Edit Message"
-                                           style="cursor: pointer">
-                                            <i class="fa fa-edit"
-                                               v-on:click="showUpdateField(message.id,index,message.message)"></i>
-                                        </a>
-                                    </div>
                                     <div class="msg_cotainer_send" style="cursor:pointer;">
+                                        <div class="testingpage">
+                                            <a class="badge badge-danger" title="Remove Message" style="cursor: pointer">
+                                                <i class="fa fa-trash" v-on:click="DeleteMessage(message.id,index)"></i>
+                                            </a><br>
+                                            <a class="badge badge-warning pl-1" title="Edit Message"
+                                               style="cursor: pointer">
+                                                <i class="fa fa-edit"
+                                                   v-on:click="showUpdateField(message.id,index,message.message)"></i>
+                                            </a>
+                                        </div>
                                         <div>
                                             <img v-if="message.type === 1" v-bind:src="'/image/'+message.message"
                                                  alt="image" style="max-width: 100%">
@@ -385,7 +385,7 @@
                 this.messageText = message;
                 this.update_index = index;
                 this.update_id = id;
-                alert(id)
+                // alert(id)
             },
             DeleteMessage(message_id, index) {
                 var app = this;
@@ -430,5 +430,13 @@
 </script>
 
 <style scoped>
-
+  .testingpage{
+      position: absolute;
+      top: 0;
+      left: -30px;
+      opacity: 0;
+  }
+    .msg_cotainer_send:hover .testingpage{
+        opacity: 1;
+    }
 </style>
