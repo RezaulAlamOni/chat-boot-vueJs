@@ -86,7 +86,7 @@
                                     </div>
                                     <div class="msg_cotainer" style="cursor: pointer;">
                                         <img v-if="message.type === 1" v-bind:src="'/image/'+message.message"
-                                             alt="image" style="max-width: 100%">
+                                             alt="image" style="max-width: 400px">
                                         <div v-else="">{{message.message}}</div>
                                         <span class="msg_time" style="min-width: 200px">8:40 AM, Today</span>
                                     </div>
@@ -107,7 +107,7 @@
                                         </div>
                                         <div>
                                             <img v-if="message.type === 1" v-bind:src="'/image/'+message.message"
-                                                 alt="image" style="max-width: 100%">
+                                                 alt="image" style="max-width: 400px">
                                             <div v-else="">
                                                 <div>
                                                     {{message.message}}

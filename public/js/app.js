@@ -38279,7 +38279,7 @@ var render = function() {
                             [
                               message.type === 1
                                 ? _c("img", {
-                                    staticStyle: { "max-width": "100%" },
+                                    staticStyle: { "max-width": "400px" },
                                     attrs: {
                                       src: "/image/" + message.message,
                                       alt: "image"
@@ -38366,7 +38366,7 @@ var render = function() {
                               _c("div", [
                                 message.type === 1
                                   ? _c("img", {
-                                      staticStyle: { "max-width": "100%" },
+                                      staticStyle: { "max-width": "400px" },
                                       attrs: {
                                         src: "/image/" + message.message,
                                         alt: "image"
